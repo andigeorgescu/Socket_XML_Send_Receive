@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO; // for File stream
@@ -19,14 +14,16 @@ namespace Socket_XML_Send_Receive
     {
         // variabile, constante
         private Socket client1, server1, server2;
-        string ip_ext, dt, ClientIP_int;
-        int port_send_ext, port_listen_int;
+        string ipExt, dt;
+        int portSendExt, portListenInt;
         private Thread workerThread1;
-        private const int BUFSIZE_FULL = 8192; // dimensiunea completa a buffer-ului pentru socket
-        private const int BUFSIZE = BUFSIZE_FULL - 4;
-        private const int BACKLOG = 5; // dimensiunea cozii de asteptare pentru socket
-        private const int TIMELIMIT = 30000; // timpul limita de ascultare pentru un client (3 sec.)
+        private const int BufsizeFull = 8192; // dimensiunea completa a buffer-ului pentru socket
+        private const int Bufsize = BufsizeFull - 4;
+        private const int Backlog = 5; // dimensiunea cozii de asteptare pentru socket
         private static bool isValid = true;      // validare cu schema a unui XML
+
+
+
         // XmlSchemaCollection cache = new XmlSchemaCollection(); //cache XSD schema
         // cache.Add("urn:MyNamespace", "C:\\MyFolder\\Product.xsd"); // add namespace XSD schema
 
@@ -40,17 +37,22 @@ namespace Socket_XML_Send_Receive
         }
         private string FindLocalIP()
         {
-            string strHostName = "";
-            strHostName = System.Net.Dns.GetHostName();
-            IPHostEntry ipEntry = System.Net.Dns.GetHostEntry(strHostName);
+            string strHostName;
+            strHostName = Dns.GetHostName();
+            IPHostEntry ipEntry = Dns.GetHostEntry(strHostName);
             IPAddress[] addr = ipEntry.AddressList;
             return addr[addr.Length - 1].ToString();
         }
-        private void Debug (string str)
+        private void Debug(string str)
         {
-            dt = GetCurrentDT();
-            richTextBox3.AppendText(dt+" - "+str + ".\n");
-            richTextBox3.ScrollToCaret();
+            Action appendToTextBox = () =>
+            {
+                dt = GetCurrentDT();
+                debugTextBox.AppendText(dt + " - " + str + ".\n");
+                debugTextBox.ScrollToCaret();
+            };
+
+            debugTextBox.Invoke(appendToTextBox);
         }
         public void MyValidationEventHandler(object sender, ValidationEventArgs args)
         {
@@ -60,7 +62,9 @@ namespace Socket_XML_Send_Receive
         private bool Validation(string file)
         {
             XmlTextReader r = new XmlTextReader(file);
+#pragma warning disable 618
             XmlValidatingReader v = new XmlValidatingReader(r);
+#pragma warning restore 618
             //v.Schemas.Add(cache);
             if (radioButton1.Checked)
             {
@@ -72,141 +76,138 @@ namespace Socket_XML_Send_Receive
             }
             else //(radioButton3.Checked)
             {
+#pragma warning disable 618
                 v.ValidationType = ValidationType.XDR;
-            };
-            v.ValidationEventHandler += new ValidationEventHandler(MyValidationEventHandler);
+#pragma warning restore 618
+            }
+            v.ValidationEventHandler += MyValidationEventHandler;
             while (v.Read())
             {
                 // Can add code here to process the content
                 // bool Success = true;
                 // Console.WriteLine("Validation finished. Validation {0}", (Success == true ? "successful" : "failed"));
                 // Path.GetExtension(label11.Text).Substring(1).ToUpper()
-            };
+            }
             v.Close();
             if (isValid)
             {
                 return true; //Document is valid
             }
-            else
-            {
-                return false;//Document is invalid
-            };
+            return false;//Document is invalid
+
         }
-        private void Listener()
+        private void Listen()
         {
             server1 = null;
-            byte[] rcvBuffer_full = new byte[BUFSIZE_FULL];
-            byte[] rcvBuffer_partial = new byte[BUFSIZE];
-            port_listen_int = System.Convert.ToInt16(textBox3.Text);
+            var rcvBufferFull = new byte[BufsizeFull];
+            var rcvBufferPartial = new byte[Bufsize];
+            portListenInt = Convert.ToInt32(portListenTextBox.Text);
             using (server1 = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
             {
                 try
                 {
-                    server1.Bind(new IPEndPoint(IPAddress.Parse(textBox4.Text), port_listen_int));
-                    server1.Listen(BACKLOG);
-                    Debug("SERVER: socket <" + textBox4.Text + ":" + port_listen_int.ToString() + "> deschis");
+                    server1.Bind(new IPEndPoint(IPAddress.Parse(textBox4.Text), portListenInt));
+                    server1.Listen(Backlog);
+                    Debug("SERVER: socket <" + textBox4.Text + ":" + portListenInt + "> deschis");
                 }
                 catch (Exception ex)
                 {
-                    Debug("SERVER: probleme creare server socket <" + textBox4.Text + ":" + port_listen_int.ToString() + ">");
-                    //Debug(ex.ToString());
-                };
+                    Debug("SERVER: probleme creare server socket <" + textBox4.Text + ":" + portListenInt + ">");
+                    Debug(ex.ToString());
+                }
                 while (true)
                 {
                     client1 = null;
-                    ClientIP_int = null;
-                    int bytesRcvd = 0, totalBytesReceived = 0;
+                    int totalBytesReceived = 0;
                     try
                     {
                         using (client1 = server1.Accept())
                         {
-                            Debug("SERVER: client socket <" + client1.RemoteEndPoint.ToString() + "> conectat");
-                            ClientIP_int = (client1.RemoteEndPoint.ToString()).Split(':')[0];
-                            while ((bytesRcvd = client1.Receive(rcvBuffer_full, 0, rcvBuffer_full.Length, SocketFlags.None)) > 0)
+                            Debug("SERVER: client socket <" + client1.RemoteEndPoint + "> conectat");
+                            int bytesRcvd;
+                            while ((bytesRcvd = client1.Receive(rcvBufferFull, 0, rcvBufferFull.Length, SocketFlags.None)) > 0)
                             {
-                                if (totalBytesReceived >= rcvBuffer_full.Length)
+                                if (totalBytesReceived >= rcvBufferFull.Length)
                                 {
                                     break;
-                                };
+                                }
                                 totalBytesReceived += bytesRcvd;
-                            };
-                            Array.Copy(rcvBuffer_full, 4, rcvBuffer_partial, 0, totalBytesReceived - 4);
-                            if (checkBox1.Checked)
+                            }
+                            Array.Copy(rcvBufferFull, 4, rcvBufferPartial, 0, totalBytesReceived - 4);
+                            if (addMessageLengthCheckBox.Checked)
                             {
                                 switch (comboBox1.Text)
                                 {
                                     case "ASCII":
-                                        if ((checkBox2.Checked) && (label11.Text!=""))
+                                        if ((checkBox2.Checked) && (label11.Text != ""))
                                         {
                                             if (Validation(label11.Text))
                                             {
-                                                richTextBox2.Text = Encoding.ASCII.GetString(rcvBuffer_partial, 0, (totalBytesReceived - 4));
+                                                richTextBox2.Text = Encoding.ASCII.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
                                             }
                                             else
                                             {
                                                 Debug("SERVER: eroare parsare XML via schema inclusa in antet");
-                                            };
+                                            }
                                         }
                                         else
                                         {
-                                            richTextBox2.Text = Encoding.ASCII.GetString(rcvBuffer_partial, 0, (totalBytesReceived - 4));
-                                        };
+                                            richTextBox2.Text = Encoding.ASCII.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
+                                        }
                                         break;
                                     case "UTF7":
                                         if ((checkBox2.Checked) && (label11.Text != ""))
                                         {
                                             if (Validation(label11.Text))
                                             {
-                                                richTextBox2.Text = Encoding.UTF7.GetString(rcvBuffer_partial, 0, (totalBytesReceived - 4));
+                                                richTextBox2.Text = Encoding.UTF7.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
                                             }
                                             else
                                             {
                                                 Debug("SERVER: eroare parsare XML via schema inclusa in antet");
-                                            };
+                                            }
                                         }
                                         else
                                         {
-                                            richTextBox2.Text = Encoding.UTF7.GetString(rcvBuffer_partial, 0, (totalBytesReceived - 4));
-                                        };
+                                            richTextBox2.Text = Encoding.UTF7.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
+                                        }
                                         break;
                                     case "UTF8":
                                         if ((checkBox2.Checked) && (label11.Text != ""))
                                         {
                                             if (Validation(label11.Text))
                                             {
-                                                richTextBox2.Text = Encoding.UTF8.GetString(rcvBuffer_partial, 0, (totalBytesReceived - 4));
+                                                richTextBox2.Text = Encoding.UTF8.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
                                             }
                                             else
                                             {
                                                 Debug("SERVER: eroare parsare XML via schema inclusa in antet");
-                                            };
+                                            }
                                         }
                                         else
                                         {
-                                            richTextBox2.Text = Encoding.UTF8.GetString(rcvBuffer_partial, 0, (totalBytesReceived - 4));
-                                        };
+                                            richTextBox2.Text = Encoding.UTF8.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
+                                        }
                                         break;
                                     case "Unicode":
                                         if ((checkBox2.Checked) && (label11.Text != ""))
                                         {
                                             if (Validation(label11.Text))
                                             {
-                                                richTextBox2.Text = Encoding.Unicode.GetString(rcvBuffer_partial, 0, (totalBytesReceived - 4));
+                                                richTextBox2.Text = Encoding.Unicode.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
                                             }
                                             else
                                             {
                                                 Debug("SERVER: eroare parsare XML via schema inclusa in antet");
-                                            };
+                                            }
                                         }
                                         else
                                         {
-                                            richTextBox2.Text = Encoding.Unicode.GetString(rcvBuffer_partial, 0, (totalBytesReceived - 4));
-                                        };
+                                            richTextBox2.Text = Encoding.Unicode.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
+                                        }
                                         break;
-                                    default:
-                                        //
-                                        break;
-                                };
+                                    //
+                                }
                                 Debug("SERVER: receptionat " + (totalBytesReceived - 4) + " bytes");
                                 if (checkBox3.Checked)
                                 {
@@ -214,7 +215,7 @@ namespace Socket_XML_Send_Receive
                                     client1.Send(rcvBuffer_partial, 0, rcvBuffer_partial.Length, SocketFlags.None);
                                     Debug("SERVER: expediat echo data catre client.");
                                     */
-                                };
+                                }
                             }
                             else
                             {
@@ -225,73 +226,71 @@ namespace Socket_XML_Send_Receive
                                         {
                                             if (Validation(label11.Text))
                                             {
-                                                richTextBox2.Text = Encoding.ASCII.GetString(rcvBuffer_full, 0, totalBytesReceived);
+                                                richTextBox2.Text = Encoding.ASCII.GetString(rcvBufferFull, 0, totalBytesReceived);
                                             }
                                             else
                                             {
                                                 Debug("SERVER: eroare parsare XML via schema inclusa in antet");
-                                            };
+                                            }
                                         }
                                         else
                                         {
-                                            richTextBox2.Text = Encoding.ASCII.GetString(rcvBuffer_full, 0, totalBytesReceived);
-                                        };
+                                            richTextBox2.Text = Encoding.ASCII.GetString(rcvBufferFull, 0, totalBytesReceived);
+                                        }
                                         break;
                                     case "UTF7":
                                         if ((checkBox2.Checked) && (label11.Text != ""))
                                         {
                                             if (Validation(label11.Text))
                                             {
-                                                richTextBox2.Text = Encoding.UTF7.GetString(rcvBuffer_full, 0, totalBytesReceived);
+                                                richTextBox2.Text = Encoding.UTF7.GetString(rcvBufferFull, 0, totalBytesReceived);
                                             }
                                             else
                                             {
                                                 Debug("SERVER: eroare parsare XML via schema inclusa in antet");
-                                            };
+                                            }
                                         }
                                         else
                                         {
-                                            richTextBox2.Text = Encoding.UTF7.GetString(rcvBuffer_full, 0, totalBytesReceived);
-                                        };
+                                            richTextBox2.Text = Encoding.UTF7.GetString(rcvBufferFull, 0, totalBytesReceived);
+                                        }
                                         break;
                                     case "UTF8":
                                         if ((checkBox2.Checked) && (label11.Text != ""))
                                         {
                                             if (Validation(label11.Text))
                                             {
-                                                richTextBox2.Text = Encoding.UTF8.GetString(rcvBuffer_full, 0, totalBytesReceived);
+                                                richTextBox2.Text = Encoding.UTF8.GetString(rcvBufferFull, 0, totalBytesReceived);
                                             }
                                             else
                                             {
                                                 Debug("SERVER: eroare parsare XML via schema inclusa in antet");
-                                            };
+                                            }
                                         }
                                         else
                                         {
-                                            richTextBox2.Text = Encoding.UTF8.GetString(rcvBuffer_full, 0, totalBytesReceived);
-                                        };
+                                            richTextBox2.Text = Encoding.UTF8.GetString(rcvBufferFull, 0, totalBytesReceived);
+                                        }
                                         break;
                                     case "Unicode":
                                         if ((checkBox2.Checked) && (label11.Text != ""))
                                         {
                                             if (Validation(label11.Text))
                                             {
-                                                richTextBox2.Text = Encoding.Unicode.GetString(rcvBuffer_full, 0, totalBytesReceived);
+                                                richTextBox2.Text = Encoding.Unicode.GetString(rcvBufferFull, 0, totalBytesReceived);
                                             }
                                             else
                                             {
                                                 Debug("SERVER: eroare parsare XML via schema inclusa in antet");
-                                            };
+                                            }
                                         }
                                         else
                                         {
-                                            richTextBox2.Text = Encoding.Unicode.GetString(rcvBuffer_full, 0, totalBytesReceived);
-                                        };
+                                            richTextBox2.Text = Encoding.Unicode.GetString(rcvBufferFull, 0, totalBytesReceived);
+                                        }
                                         break;
-                                    default:
-                                        //
-                                        break;
-                                };
+                                    //
+                                }
                                 Debug("SERVER: receptionat " + totalBytesReceived + " bytes");
                                 if (checkBox3.Checked)
                                 {
@@ -299,163 +298,51 @@ namespace Socket_XML_Send_Receive
                                     client1.Send(rcvBuffer_partial, 0, rcvBuffer_partial.Length, SocketFlags.None);
                                     Debug("SERVER: expediat echo data catre client.");
                                     */
-                                };
-                            };
-                        };
+                                }
+                            }
+                        }
                         if (client1 != null)
                         {
                             client1.Close();
-                        };
+                        }
                         Debug("SERVER: client socket deconectat");
                     }
                     catch (Exception ex)
                     {
-                        //Debug(ex.ToString());
+                        Debug(ex.ToString());
                     }
                     finally
                     {
                         if (client1 != null)
                         {
                             client1.Close();
-                        };
-                    };
-                };
-            };
+                        }
+                    }
+                }
+            }
         }
-        private void Sender()
+        private void Send()
         {
-            ip_ext = textBox1.Text;
-            port_send_ext = System.Convert.ToInt16(textBox2.Text);
+            ipExt = textBox1.Text;
+            portSendExt = Convert.ToInt32(textBox2.Text);
             server2 = null;
             using (server2 = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
             {
                 try
                 {
-                    IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse(ip_ext), port_send_ext);
+                    var serverEndPoint = new IPEndPoint(IPAddress.Parse(ipExt), portSendExt);
                     server2.Connect(serverEndPoint);
-                    Debug("CLIENT: conectat la server socket <" + ip_ext + ":" + port_send_ext.ToString() + ">");
-                    if (checkBox1.Checked)
-                    {
-                        byte[] buff_full = null;
-                        int reqLen = richTextBox1.Text.Length;
-                        int reqLenH2N = IPAddress.HostToNetworkOrder(reqLen * 2);
-                        byte[] reqLenArray = BitConverter.GetBytes(reqLenH2N);
-                        switch (comboBox1.Text)
-                        {
-                            case "ASCII":
-                                buff_full = Encoding.ASCII.GetBytes(richTextBox1.Text);
-                                break;
-                            case "UTF7":
-                                buff_full = Encoding.UTF7.GetBytes(richTextBox1.Text);
-                                break;
-                            case "UTF8":
-                                buff_full = Encoding.UTF8.GetBytes(richTextBox1.Text);
-                                break;
-                            case "Unicode":
-                                buff_full = Encoding.Unicode.GetBytes(richTextBox1.Text);
-                                break;
-                            default:
-                                //
-                                break;
-                        };
-                        byte[] buff_partial = new byte[reqLen * 2 + 4];
-                        reqLenArray.CopyTo(buff_partial, 0);
-                        buff_full.CopyTo(buff_partial, 4);
-                        server2.Send(buff_partial, 0, buff_partial.Length, SocketFlags.None);
-                        if (checkBox3.Checked)
-                        {
-                            /*
-                            byte[] buff_receive_full = new byte[BUFSIZE_FULL];
-                            byte[] buff_receive_partial = new byte[BUFSIZE];
-                            server2.Receive(buff_receive_full, 0, buff_receive_full.Length, SocketFlags.None);
-                            Array.Copy(buff_receive_full, 4, buff_receive_partial, 0, buff_receive_full.Length - 4);
-                            switch (comboBox1.Text)
-                            {
-                                case "ASCII":
-                                    richTextBox5.Text = Encoding.ASCII.GetString(buff_receive_partial, 0, buff_receive_partial.Length);
-                                    break;
-                                case "UTF7":
-                                    richTextBox5.Text = Encoding.UTF7.GetString(buff_receive_partial, 0, buff_receive_partial.Length);
-                                    break;
-                                case "UTF8":
-                                    richTextBox5.Text = Encoding.UTF8.GetString(buff_receive_partial, 0, buff_receive_partial.Length);
-                                    break;
-                                case "Unicode":
-                                    richTextBox5.Text = Encoding.Unicode.GetString(buff_receive_partial, 0, buff_receive_partial.Length);
-                                    break;
-                                default:
-                                    //
-                                    break;
-                            };
-                            // cod de la Gino prin care fac trecerea byte > char > string
-                            //server2.Receive(buff_receive, SocketFlags.None);
-                            //char[] result = System.Text.Encoding.ASCII.GetChars(buff_receive);
-                            //string resultString = new String(result);     
-                            Debug("CLIENT: receptionat echo data de la server socket.");
-                            */ 
-                        }; 
-                    }
-                    else
-                    {
-                        byte[] buff_full = null;
-                        switch (comboBox1.Text)
-                        {
-                            case "ASCII":
-                                buff_full = Encoding.ASCII.GetBytes(richTextBox1.Text);
-                                break;
-                            case "UTF7":
-                                buff_full = Encoding.UTF7.GetBytes(richTextBox1.Text);
-                                break;
-                            case "UTF8":
-                                buff_full = Encoding.UTF8.GetBytes(richTextBox1.Text);
-                                break;
-                            case "Unicode":
-                                buff_full = Encoding.Unicode.GetBytes(richTextBox1.Text);
-                                break;
-                            default:
-                                //
-                                break;
-                        };
-                        server2.Send(buff_full, 0, buff_full.Length, SocketFlags.None);
-                        if (checkBox3.Checked)
-                        {
-                            /*
-                            byte[] buff_receive_full = new byte[BUFSIZE_FULL];
-                            byte[] buff_receive_partial = new byte[BUFSIZE];
-                            server2.Receive(buff_receive_full, 0, buff_receive_full.Length, SocketFlags.None);
-                            Array.Copy(buff_receive_full, 4, buff_receive_partial, 0, buff_receive_full.Length - 4);
-                            switch (comboBox1.Text)
-                            {
-                                case "ASCII":
-                                    richTextBox5.Text = Encoding.ASCII.GetString(buff_receive_partial, 0, buff_receive_partial.Length);
-                                    break;
-                                case "UTF7":
-                                    richTextBox5.Text = Encoding.UTF7.GetString(buff_receive_partial, 0, buff_receive_partial.Length);
-                                    break;
-                                case "UTF8":
-                                    richTextBox5.Text = Encoding.UTF8.GetString(buff_receive_partial, 0, buff_receive_partial.Length);
-                                    break;
-                                case "Unicode":
-                                    richTextBox5.Text = Encoding.Unicode.GetString(buff_receive_partial, 0, buff_receive_partial.Length);
-                                    break;
-                                default:
-                                    //
-                                    break;
-                            };
-                            // cod de la Gino prin care fac trecerea byte > char > string
-                            //server2.Receive(buff_receive, SocketFlags.None);
-                            //char[] result = System.Text.Encoding.ASCII.GetChars(buff_receive);
-                            //string resultString = new String(result);     
-                            Debug("CLIENT: receptionat echo data de la server socket.");
-                            */ 
-                        };              
-                    };
+                    Debug("CLIENT: conectat la server socket <" + ipExt + ":" + portSendExt + ">");
+                    var requestCreator = new RequestCreator();
+                    var byteArrayToSend = requestCreator.GetByteArrayToSend(richTextBox1.Text, (Encoding)comboBox1.SelectedItem, addMessageLengthCheckBox.Checked);
+                    server2.Send(byteArrayToSend, SocketFlags.None);
+
                     Debug("CLIENT: date expediate de la client la server socket.");
                 }
                 catch (Exception ex)
                 {
-                    Debug("CLIENT: probleme conectare/trimitere de la client la server socket <" + ip_ext + ":" + port_send_ext.ToString() + ">");
-                    //Debug(ex.ToString());
+                    Debug("CLIENT: probleme conectare/trimitere de la client la server socket <" + ipExt + ":" + portSendExt + ">");
+                    Debug(ex.ToString());
                 }
                 finally
                 {
@@ -464,8 +351,8 @@ namespace Socket_XML_Send_Receive
                         server2.Close();
                         ((IDisposable)server2).Dispose();
                         Debug("CLIENT: deconectat de la server socket");
-                    };
-                };
+                    }
+                }
             }
         }
 
@@ -474,6 +361,7 @@ namespace Socket_XML_Send_Receive
         {
             InitializeComponent();
         }
+
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBox2.Checked)
@@ -494,7 +382,7 @@ namespace Socket_XML_Send_Receive
                 richTextBox4.Clear();
                 label3.Text = "";
                 label11.Text = "";
-            };
+            }
         }
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -504,47 +392,47 @@ namespace Socket_XML_Send_Receive
         }
         private void button2_Click(object sender, EventArgs e)
         {
-            int size = -1;
-            OpenFileDialog fDialog = new OpenFileDialog();
-            fDialog.Title = "Select XSD/DTD/XDR File";
-            fDialog.Filter = "XSD Files|*.xsd|DTD Files|*.dtd|XDR Files|*.xdr";
+            var fDialog = new OpenFileDialog
+            {
+                Title = "Select XSD/DTD/XDR File",
+                Filter = "XSD Files|*.xsd|DTD Files|*.dtd|XDR Files|*.xdr",
+                ShowHelp = false,
+                CheckFileExists = true,
+                CheckPathExists = true,
+                AddExtension = true,
+                InitialDirectory = @Application.StartupPath
+            };
             //fDialog.Filter = "XSD Files|*.xsd|DTD Files|*.dtd|XDR Files|*.xdr|All Files|*.*";
-            fDialog.ShowHelp = false;
-            fDialog.CheckFileExists = true;
-            fDialog.CheckPathExists = true;
-            fDialog.AddExtension = true;
-            fDialog.InitialDirectory = @Application.StartupPath;
             //fDialog.InitialDirectory =@Environment.GetFolderPath(System.Environment.SpecialFolder.DesktopDirectory).ToString();
             //fDialog.InitialDirectory = @"C:\";
             if (fDialog.ShowDialog() == DialogResult.OK)
             {
-                label3.Text = fDialog.FileName.ToString();
+                label3.Text = fDialog.FileName;
                 try
                 {
                     richTextBox4.Clear();
-                    richTextBox4.Text = File.ReadAllText(fDialog.FileName.ToString());
-                    size = richTextBox4.Text.Length;
+                    richTextBox4.Text = File.ReadAllText(fDialog.FileName);
                 }
                 catch (Exception ex)
                 {
                     Debug("Probleme incarcare/deschidere fisier XSD/DTD");
-                    //Debug(ex.ToString());
-                };
-            };
+                    Debug(ex.ToString());
+                }
+            }
         }
-        private void button3_Click(object sender, EventArgs e)
+        private void listenButton_Click(object sender, EventArgs e)
         {
-            if (button3.Text == "Listen ON")
+            if (listenButton.Text == "Listen ON")
             {
-                button3.Text = "Listen OFF";
+                listenButton.Text = "Listen OFF";
                 //button1.Enabled = true;
-                workerThread1 = new Thread(Listener);
+                workerThread1 = new Thread(Listen);
                 workerThread1.Start();
 
             }
             else
             {
-                button3.Text = "Listen ON";
+                listenButton.Text = "Listen ON";
                 //button1.Enabled = false;
                 try
                 {
@@ -552,8 +440,8 @@ namespace Socket_XML_Send_Receive
                     {
                         server1.Close();
                         ((IDisposable)server1).Dispose();
-                        Debug("SERVER: socket <" + textBox4.Text + ":" + port_listen_int.ToString() + "> inchis");
-                    };
+                        Debug("SERVER: socket <" + textBox4.Text + ":" + portListenInt + "> inchis");
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -562,47 +450,47 @@ namespace Socket_XML_Send_Receive
                 finally
                 {
                     workerThread1.Abort();
-                };
-            };
+                }
+            }
         }
-        private void button1_Click(object sender, EventArgs e)
+        private void sendButton_Click(object sender, EventArgs e)
         {
-            Sender();
+            Send();
         }
         private void button4_Click(object sender, EventArgs e)
         {
-            richTextBox3.Clear();
+            debugTextBox.Clear();
         }
         private void button5_Click(object sender, EventArgs e)
         {
-            int size = -1;
-            OpenFileDialog fDialog = new OpenFileDialog();
-            fDialog.Title = "Select XML File";
-            fDialog.Filter = "XML Files|*.xml";
+            var fDialog = new OpenFileDialog
+            {
+                Title = "Select XML File",
+                Filter = "XML Files|*.xml",
+                ShowHelp = false,
+                CheckFileExists = true,
+                CheckPathExists = true,
+                AddExtension = true,
+                InitialDirectory = @Application.StartupPath
+            };
             //fDialog.Filter = "XML Files|*.xml|All Files|*.*";
-            fDialog.ShowHelp = false;
-            fDialog.CheckFileExists = true;
-            fDialog.CheckPathExists = true;
-            fDialog.AddExtension = true;
-            fDialog.InitialDirectory = @Application.StartupPath;
             //fDialog.InitialDirectory =@Environment.GetFolderPath(System.Environment.SpecialFolder.DesktopDirectory).ToString();
             //fDialog.InitialDirectory = @"C:\";
             if (fDialog.ShowDialog() == DialogResult.OK)
             {
                 isValid = true;
-                label11.Text = fDialog.FileName.ToString();
+                label11.Text = fDialog.FileName;
                 try
                 {
                     richTextBox1.Clear();
-                    richTextBox1.Text = File.ReadAllText(fDialog.FileName.ToString());
-                    size = richTextBox1.Text.Length;
+                    richTextBox1.Text = File.ReadAllText(fDialog.FileName);
                 }
                 catch (Exception ex)
                 {
                     Debug("Probleme incarcare/deschidere fisier XML");
-                    //Debug(ex.ToString());
-                };
-            };
+                    Debug(ex.ToString());
+                }
+            }
         }
         private void button7_Click(object sender, EventArgs e)
         {
@@ -615,10 +503,10 @@ namespace Socket_XML_Send_Receive
         }
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (button3.Text == "Listen OFF")
+            if (listenButton.Text == "Listen OFF")
             {
-                button3_Click(sender, e);
-            };
+                listenButton_Click(sender, e);
+            }
         }
     }
 }

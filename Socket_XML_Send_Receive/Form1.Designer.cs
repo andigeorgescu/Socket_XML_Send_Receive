@@ -1,4 +1,6 @@
-﻿namespace Socket_XML_Send_Receive
+﻿using System.Text;
+
+namespace Socket_XML_Send_Receive
 {
     partial class Form1
     {
@@ -32,24 +34,24 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.textBox2 = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.sendButton = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
-            this.button3 = new System.Windows.Forms.Button();
-            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.listenButton = new System.Windows.Forms.Button();
+            this.portListenTextBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.richTextBox3 = new System.Windows.Forms.RichTextBox();
+            this.debugTextBox = new System.Windows.Forms.RichTextBox();
             this.button4 = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.addMessageLengthCheckBox = new System.Windows.Forms.CheckBox();
             this.richTextBox4 = new System.Windows.Forms.RichTextBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.button5 = new System.Windows.Forms.Button();
@@ -104,16 +106,16 @@
             this.textBox2.TabIndex = 10;
             this.textBox2.Text = "10000";
             // 
-            // button1
+            // sendButton
             // 
-            this.button1.Location = new System.Drawing.Point(456, 71);
-            this.button1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(100, 28);
-            this.button1.TabIndex = 11;
-            this.button1.Text = "Send XML";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.sendButton.Location = new System.Drawing.Point(456, 71);
+            this.sendButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.sendButton.Name = "sendButton";
+            this.sendButton.Size = new System.Drawing.Size(100, 28);
+            this.sendButton.TabIndex = 11;
+            this.sendButton.Text = "Send XML";
+            this.sendButton.UseVisualStyleBackColor = true;
+            this.sendButton.Click += new System.EventHandler(this.sendButton_Click);
             // 
             // richTextBox1
             // 
@@ -155,26 +157,26 @@
             this.richTextBox2.TabIndex = 20;
             this.richTextBox2.Text = "";
             // 
-            // button3
+            // listenButton
             // 
-            this.button3.Location = new System.Drawing.Point(456, 289);
-            this.button3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(100, 28);
-            this.button3.TabIndex = 18;
-            this.button3.Text = "Listen ON";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.listenButton.Location = new System.Drawing.Point(456, 289);
+            this.listenButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.listenButton.Name = "listenButton";
+            this.listenButton.Size = new System.Drawing.Size(100, 28);
+            this.listenButton.TabIndex = 18;
+            this.listenButton.Text = "Listen ON";
+            this.listenButton.UseVisualStyleBackColor = true;
+            this.listenButton.Click += new System.EventHandler(this.listenButton_Click);
             // 
             // textBox3
             // 
-            this.textBox3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-            this.textBox3.Location = new System.Drawing.Point(280, 290);
-            this.textBox3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(63, 22);
-            this.textBox3.TabIndex = 17;
-            this.textBox3.Text = "10000";
+            this.portListenTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            this.portListenTextBox.Location = new System.Drawing.Point(280, 290);
+            this.portListenTextBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.portListenTextBox.Name = "textBox3";
+            this.portListenTextBox.Size = new System.Drawing.Size(63, 22);
+            this.portListenTextBox.TabIndex = 17;
+            this.portListenTextBox.Text = "10000";
             // 
             // label4
             // 
@@ -208,14 +210,14 @@
             // 
             // richTextBox3
             // 
-            this.richTextBox3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-            this.richTextBox3.Location = new System.Drawing.Point(99, 511);
-            this.richTextBox3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.richTextBox3.Name = "richTextBox3";
-            this.richTextBox3.ReadOnly = true;
-            this.richTextBox3.Size = new System.Drawing.Size(456, 114);
-            this.richTextBox3.TabIndex = 22;
-            this.richTextBox3.Text = "";
+            this.debugTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            this.debugTextBox.Location = new System.Drawing.Point(99, 511);
+            this.debugTextBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.debugTextBox.Name = "richTextBox3";
+            this.debugTextBox.ReadOnly = true;
+            this.debugTextBox.Size = new System.Drawing.Size(456, 114);
+            this.debugTextBox.TabIndex = 22;
+            this.debugTextBox.Text = "";
             // 
             // button4
             // 
@@ -273,26 +275,27 @@
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
-            "ASCII",
-            "UTF7",
-            "UTF8",
-            "Unicode"});
+            Encoding.ASCII,
+            Encoding.UTF7,
+            Encoding.UTF8,
+            Encoding.Unicode});
+            this.comboBox1.DisplayMember = "EncodingName";
             this.comboBox1.Location = new System.Drawing.Point(99, 15);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(160, 24);
             this.comboBox1.TabIndex = 1;
             // 
-            // checkBox1
+            // addMessageLengthCheckBox
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(505, 17);
-            this.checkBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(81, 21);
-            this.checkBox1.TabIndex = 2;
-            this.checkBox1.Text = "LE > BE";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.addMessageLengthCheckBox.AutoSize = true;
+            this.addMessageLengthCheckBox.Location = new System.Drawing.Point(505, 17);
+            this.addMessageLengthCheckBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.addMessageLengthCheckBox.Name = "addMessageLengthCheckBox";
+            this.addMessageLengthCheckBox.Size = new System.Drawing.Size(81, 21);
+            this.addMessageLengthCheckBox.TabIndex = 2;
+            this.addMessageLengthCheckBox.Text = "Add Length";
+            this.addMessageLengthCheckBox.UseVisualStyleBackColor = true;
             // 
             // richTextBox4
             // 
@@ -450,24 +453,24 @@
             this.Controls.Add(this.button5);
             this.Controls.Add(this.checkBox2);
             this.Controls.Add(this.richTextBox4);
-            this.Controls.Add(this.checkBox1);
+            this.Controls.Add(this.addMessageLengthCheckBox);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.button4);
-            this.Controls.Add(this.richTextBox3);
+            this.Controls.Add(this.debugTextBox);
             this.Controls.Add(this.richTextBox2);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.textBox3);
+            this.Controls.Add(this.listenButton);
+            this.Controls.Add(this.portListenTextBox);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.textBox4);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.richTextBox1);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.sendButton);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.textBox1);
@@ -493,24 +496,24 @@
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button sendButton;
         private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.RichTextBox richTextBox2;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.Button listenButton;
+        private System.Windows.Forms.TextBox portListenTextBox;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.RichTextBox richTextBox3;
+        private System.Windows.Forms.RichTextBox debugTextBox;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox addMessageLengthCheckBox;
         private System.Windows.Forms.RichTextBox richTextBox4;
         private System.Windows.Forms.CheckBox checkBox2;
         private System.Windows.Forms.Button button5;
