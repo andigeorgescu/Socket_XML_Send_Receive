@@ -50,7 +50,7 @@ namespace Socket_XML_Send_Receive
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.encodingTypeComboBox = new System.Windows.Forms.ComboBox();
             this.addMessageLengthCheckBox = new System.Windows.Forms.CheckBox();
             this.richTextBox4 = new System.Windows.Forms.RichTextBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
@@ -272,19 +272,19 @@ namespace Socket_XML_Send_Receive
             // 
             // comboBox1
             // 
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
+            this.encodingTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.encodingTypeComboBox.FormattingEnabled = true;
+            this.encodingTypeComboBox.Items.AddRange(new object[] {
             Encoding.ASCII,
             Encoding.UTF7,
             Encoding.UTF8,
             Encoding.Unicode});
-            this.comboBox1.DisplayMember = "EncodingName";
-            this.comboBox1.Location = new System.Drawing.Point(99, 15);
-            this.comboBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(160, 24);
-            this.comboBox1.TabIndex = 1;
+            this.encodingTypeComboBox.DisplayMember = "EncodingName";
+            this.encodingTypeComboBox.Location = new System.Drawing.Point(99, 15);
+            this.encodingTypeComboBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.encodingTypeComboBox.Name = "comboBox1";
+            this.encodingTypeComboBox.Size = new System.Drawing.Size(160, 24);
+            this.encodingTypeComboBox.TabIndex = 1;
             // 
             // addMessageLengthCheckBox
             // 
@@ -454,7 +454,7 @@ namespace Socket_XML_Send_Receive
             this.Controls.Add(this.checkBox2);
             this.Controls.Add(this.richTextBox4);
             this.Controls.Add(this.addMessageLengthCheckBox);
-            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.encodingTypeComboBox);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
@@ -512,7 +512,7 @@ namespace Socket_XML_Send_Receive
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox encodingTypeComboBox;
         private System.Windows.Forms.CheckBox addMessageLengthCheckBox;
         private System.Windows.Forms.RichTextBox richTextBox4;
         private System.Windows.Forms.CheckBox checkBox2;

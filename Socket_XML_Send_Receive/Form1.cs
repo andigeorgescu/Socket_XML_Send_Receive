@@ -131,7 +131,9 @@ namespace Socket_XML_Send_Receive
                            
                              if (addMessageLengthCheckBox.Checked)
                             {
-                                switch (comboBox1.Text)
+
+
+                                switch (encodingTypeComboBox.Text)
                                 {
                                     case "ASCII":
                                         if ((checkBox2.Checked) && (label11.Text != ""))
@@ -214,7 +216,7 @@ namespace Socket_XML_Send_Receive
                             }
                             else
                             {
-                                switch (comboBox1.Text)
+                                switch (encodingTypeComboBox.Text)
                                 {
                                     case "ASCII":
                                         if ((checkBox2.Checked) && (label11.Text != ""))
@@ -338,7 +340,7 @@ namespace Socket_XML_Send_Receive
                     server2.Connect(serverEndPoint);
                     Debug("CLIENT: conectat la server socket <" + ipExt + ":" + portSendExt + ">");
                     var requestCreator = new RequestCreator();
-                    var byteArrayToSend = requestCreator.GetByteArrayToSend(richTextBox1.Text, (Encoding)comboBox1.SelectedItem, addMessageLengthCheckBox.Checked);
+                    var byteArrayToSend = requestCreator.GetByteArrayToSend(richTextBox1.Text, (Encoding)encodingTypeComboBox.SelectedItem, addMessageLengthCheckBox.Checked);
                     server2.Send(byteArrayToSend, SocketFlags.None);
 
                     Debug("CLIENT: date expediate de la client la server socket.");
@@ -390,7 +392,7 @@ namespace Socket_XML_Send_Receive
         }
         private void Form1_Load(object sender, EventArgs e)
         {
-            comboBox1.SelectedIndex = 0;
+            encodingTypeComboBox.SelectedIndex = 0;
             textBox1.Text = FindLocalIP();
             textBox4.Text = FindLocalIP();
         }
