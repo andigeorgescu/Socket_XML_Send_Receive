@@ -124,15 +124,7 @@ namespace Socket_XML_Send_Receive
                         using (client1 = server1.Accept())
                         {
                             Debug("SERVER: client socket <" + client1.RemoteEndPoint + "> conectat");
-                            int bytesRcvd;
-                            while ((bytesRcvd = client1.Receive(rcvBufferFull, 0, rcvBufferFull.Length, SocketFlags.None)) > 0)
-                            {
-                                if (totalBytesReceived >= rcvBufferFull.Length)
-                                {
-                                    break;
-                                }
-                                totalBytesReceived += bytesRcvd;
-                            }
+                            totalBytesReceived = TotalBytesReceived(rcvBufferFull, totalBytesReceived);
                             Array.Copy(rcvBufferFull, 4, rcvBufferPartial, 0, totalBytesReceived - 4);
                             if (addMessageLengthCheckBox.Checked)
                             {
@@ -292,13 +284,7 @@ namespace Socket_XML_Send_Receive
                                     //
                                 }
                                 Debug("SERVER: receptionat " + totalBytesReceived + " bytes");
-                                if (checkBox3.Checked)
-                                {
-                                    /*
-                                    client1.Send(rcvBuffer_partial, 0, rcvBuffer_partial.Length, SocketFlags.None);
-                                    Debug("SERVER: expediat echo data catre client.");
-                                    */
-                                }
+                               
                             }
                         }
                         if (client1 != null)
@@ -321,6 +307,21 @@ namespace Socket_XML_Send_Receive
                 }
             }
         }
+
+        private int TotalBytesReceived(byte[] rcvBufferFull, int totalBytesReceived)
+        {
+            int bytesReceived;
+            while ((bytesReceived = client1.Receive(rcvBufferFull, 0, rcvBufferFull.Length, SocketFlags.None)) > 0)
+            {
+                if (totalBytesReceived >= rcvBufferFull.Length)
+                {
+                    break;
+                }
+                totalBytesReceived += bytesReceived;
+            }
+            return totalBytesReceived;
+        }
+
         private void Send()
         {
             ipExt = textBox1.Text;
