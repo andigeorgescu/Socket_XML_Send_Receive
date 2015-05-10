@@ -124,9 +124,12 @@ namespace Socket_XML_Send_Receive
                         using (client1 = server1.Accept())
                         {
                             Debug("SERVER: client socket <" + client1.RemoteEndPoint + "> conectat");
+
                             totalBytesReceived = TotalBytesReceived(rcvBufferFull, totalBytesReceived);
+
                             Array.Copy(rcvBufferFull, 4, rcvBufferPartial, 0, totalBytesReceived - 4);
-                            if (addMessageLengthCheckBox.Checked)
+                           
+                             if (addMessageLengthCheckBox.Checked)
                             {
                                 switch (comboBox1.Text)
                                 {
@@ -135,7 +138,7 @@ namespace Socket_XML_Send_Receive
                                         {
                                             if (Validation(label11.Text))
                                             {
-                                                richTextBox2.Text = Encoding.ASCII.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
+                                                serverTextBox.Text = Encoding.ASCII.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
                                             }
                                             else
                                             {
@@ -144,7 +147,7 @@ namespace Socket_XML_Send_Receive
                                         }
                                         else
                                         {
-                                            richTextBox2.Text = Encoding.ASCII.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
+                                            serverTextBox.Text = Encoding.ASCII.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
                                         }
                                         break;
                                     case "UTF7":
@@ -152,7 +155,7 @@ namespace Socket_XML_Send_Receive
                                         {
                                             if (Validation(label11.Text))
                                             {
-                                                richTextBox2.Text = Encoding.UTF7.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
+                                                serverTextBox.Text = Encoding.UTF7.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
                                             }
                                             else
                                             {
@@ -161,7 +164,7 @@ namespace Socket_XML_Send_Receive
                                         }
                                         else
                                         {
-                                            richTextBox2.Text = Encoding.UTF7.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
+                                            serverTextBox.Text = Encoding.UTF7.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
                                         }
                                         break;
                                     case "UTF8":
@@ -169,7 +172,7 @@ namespace Socket_XML_Send_Receive
                                         {
                                             if (Validation(label11.Text))
                                             {
-                                                richTextBox2.Text = Encoding.UTF8.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
+                                                serverTextBox.Text = Encoding.UTF8.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
                                             }
                                             else
                                             {
@@ -178,7 +181,7 @@ namespace Socket_XML_Send_Receive
                                         }
                                         else
                                         {
-                                            richTextBox2.Text = Encoding.UTF8.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
+                                            serverTextBox.Text = Encoding.UTF8.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
                                         }
                                         break;
                                     case "Unicode":
@@ -186,7 +189,7 @@ namespace Socket_XML_Send_Receive
                                         {
                                             if (Validation(label11.Text))
                                             {
-                                                richTextBox2.Text = Encoding.Unicode.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
+                                                serverTextBox.Text = Encoding.Unicode.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
                                             }
                                             else
                                             {
@@ -195,7 +198,7 @@ namespace Socket_XML_Send_Receive
                                         }
                                         else
                                         {
-                                            richTextBox2.Text = Encoding.Unicode.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
+                                            serverTextBox.Text = Encoding.Unicode.GetString(rcvBufferPartial, 0, (totalBytesReceived - 4));
                                         }
                                         break;
                                     //
@@ -218,7 +221,7 @@ namespace Socket_XML_Send_Receive
                                         {
                                             if (Validation(label11.Text))
                                             {
-                                                richTextBox2.Text = Encoding.ASCII.GetString(rcvBufferFull, 0, totalBytesReceived);
+                                                serverTextBox.Text = Encoding.ASCII.GetString(rcvBufferFull, 0, totalBytesReceived);
                                             }
                                             else
                                             {
@@ -227,7 +230,7 @@ namespace Socket_XML_Send_Receive
                                         }
                                         else
                                         {
-                                            richTextBox2.Text = Encoding.ASCII.GetString(rcvBufferFull, 0, totalBytesReceived);
+                                            serverTextBox.Text = Encoding.ASCII.GetString(rcvBufferFull, 0, totalBytesReceived);
                                         }
                                         break;
                                     case "UTF7":
@@ -235,7 +238,7 @@ namespace Socket_XML_Send_Receive
                                         {
                                             if (Validation(label11.Text))
                                             {
-                                                richTextBox2.Text = Encoding.UTF7.GetString(rcvBufferFull, 0, totalBytesReceived);
+                                                serverTextBox.Text = Encoding.UTF7.GetString(rcvBufferFull, 0, totalBytesReceived);
                                             }
                                             else
                                             {
@@ -244,7 +247,7 @@ namespace Socket_XML_Send_Receive
                                         }
                                         else
                                         {
-                                            richTextBox2.Text = Encoding.UTF7.GetString(rcvBufferFull, 0, totalBytesReceived);
+                                            serverTextBox.Text = Encoding.UTF7.GetString(rcvBufferFull, 0, totalBytesReceived);
                                         }
                                         break;
                                     case "UTF8":
@@ -252,7 +255,7 @@ namespace Socket_XML_Send_Receive
                                         {
                                             if (Validation(label11.Text))
                                             {
-                                                richTextBox2.Text = Encoding.UTF8.GetString(rcvBufferFull, 0, totalBytesReceived);
+                                                serverTextBox.Text = Encoding.UTF8.GetString(rcvBufferFull, 0, totalBytesReceived);
                                             }
                                             else
                                             {
@@ -261,7 +264,7 @@ namespace Socket_XML_Send_Receive
                                         }
                                         else
                                         {
-                                            richTextBox2.Text = Encoding.UTF8.GetString(rcvBufferFull, 0, totalBytesReceived);
+                                            serverTextBox.Text = Encoding.UTF8.GetString(rcvBufferFull, 0, totalBytesReceived);
                                         }
                                         break;
                                     case "Unicode":
@@ -269,7 +272,7 @@ namespace Socket_XML_Send_Receive
                                         {
                                             if (Validation(label11.Text))
                                             {
-                                                richTextBox2.Text = Encoding.Unicode.GetString(rcvBufferFull, 0, totalBytesReceived);
+                                                serverTextBox.Text = Encoding.Unicode.GetString(rcvBufferFull, 0, totalBytesReceived);
                                             }
                                             else
                                             {
@@ -278,7 +281,7 @@ namespace Socket_XML_Send_Receive
                                         }
                                         else
                                         {
-                                            richTextBox2.Text = Encoding.Unicode.GetString(rcvBufferFull, 0, totalBytesReceived);
+                                            serverTextBox.Text = Encoding.Unicode.GetString(rcvBufferFull, 0, totalBytesReceived);
                                         }
                                         break;
                                     //
@@ -500,7 +503,7 @@ namespace Socket_XML_Send_Receive
         }
         private void button6_Click(object sender, EventArgs e)
         {
-            richTextBox2.Clear();
+            serverTextBox.Clear();
         }
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {

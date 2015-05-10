@@ -38,7 +38,7 @@ namespace Socket_XML_Send_Receive
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
-            this.richTextBox2 = new System.Windows.Forms.RichTextBox();
+            this.serverTextBox = new System.Windows.Forms.RichTextBox();
             this.listenButton = new System.Windows.Forms.Button();
             this.portListenTextBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -150,12 +150,12 @@ namespace Socket_XML_Send_Receive
             // 
             // richTextBox2
             // 
-            this.richTextBox2.Location = new System.Drawing.Point(99, 325);
-            this.richTextBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.richTextBox2.Name = "richTextBox2";
-            this.richTextBox2.Size = new System.Drawing.Size(456, 144);
-            this.richTextBox2.TabIndex = 20;
-            this.richTextBox2.Text = "";
+            this.serverTextBox.Location = new System.Drawing.Point(99, 325);
+            this.serverTextBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.serverTextBox.Name = "richTextBox2";
+            this.serverTextBox.Size = new System.Drawing.Size(456, 144);
+            this.serverTextBox.TabIndex = 20;
+            this.serverTextBox.Text = "";
             // 
             // listenButton
             // 
@@ -461,7 +461,7 @@ namespace Socket_XML_Send_Receive
             this.Controls.Add(this.label6);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.debugTextBox);
-            this.Controls.Add(this.richTextBox2);
+            this.Controls.Add(this.serverTextBox);
             this.Controls.Add(this.listenButton);
             this.Controls.Add(this.portListenTextBox);
             this.Controls.Add(this.label4);
@@ -500,7 +500,7 @@ namespace Socket_XML_Send_Receive
         private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.RichTextBox richTextBox2;
+        private System.Windows.Forms.RichTextBox serverTextBox;
         private System.Windows.Forms.Button listenButton;
         private System.Windows.Forms.TextBox portListenTextBox;
         private System.Windows.Forms.Label label4;
